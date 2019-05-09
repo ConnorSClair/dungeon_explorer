@@ -12,22 +12,28 @@ class Dungeon_Master:
     def __init__(self, n: int, m: int):
         self.dungeon = Dungeon(n,m,0,(0,0),(n-1,m-1)) 
         while True:
-        choice = input("move - {left,right,up,down} or quit - {quit}")
-        if choice == "quit":
-            break
-        else:
-            if choice == "left":
-                dungeon_master.move_explorer(Move.LEFT)
-            if choice == "right":
-                dungeon_master.move_explorer(Move.RIGHT)
-            if choice == "up":
-                dungeon_master.move_explorer(Move.UP)
-            if choice == "down":
-                dungeon_master.move_explorer(Move.DOWN)
+            choice = input("move - {left,right,up,down} or quit - {quit}")
+            if choice == "quit":
+                break
+            else:
+                if choice == "left":
+                    self.move_explorer(Move.LEFT)
+                if choice == "right":
+                    self.move_explorer(Move.RIGHT)
+                if choice == "up":
+                    self.move_explorer(Move.UP)
+                if choice == "down":
+                    self.move_explorer(Move.DOWN)
         
     def move_explorer(self,move: Move):
-        self.dungeon.move_explorer(move)
-        print(self.dungeon)
+        dungeon = self.dungeon
+        sym: str = "o"
+        end_loc = (dungeon.explorer_loc[0]+move.value[0],dungeon.explorer_loc[1]+move.value[1])
+        if dungeon.set_cell(end_loc,sym,dungeon.entities):
+            dungeon.set_cell(dungeon.explorer_loc,None,dungeon.entities)
+            dungeon.explorer_loc = end_loc
+        logging.info("{} moved from {} to {}".format(sym,dungeon.explorer_loc,end_loc))
+        print(dungeon)
 
 class Dungeon:
     def __init__(self, n: int, m: int,obsticles: int, start_loc:Tuple[int,int], goal_loc:Tuple[int,int]):
@@ -72,24 +78,12 @@ class Dungeon:
             self.entities.append(row)
         logging.info(self.entities)
     
-    def move_explorer(self, move: Move):
-        sym: str = "o"
-        end_loc = (self.explorer_loc[0]+move.value[0],self.explorer_loc[1]+move.value[1])
-        if self.set_cell(end_loc,sym,self.entities):
-            self.set_cell(self.explorer_loc,None,self.entities)
-            self.explorer_loc = end_loc
-        logging.info("{} moved from {} to {}".format(sym,self.explorer_loc,end_loc))
-
     def set_entity(self, loc:Tuple[int,int],sym: str): 
         if self.valid_loc(loc):
             self.entities[loc[0]][loc[1]] = sym
             logging.info(self.entities)
         else:
             logging.warning("invalid location {}".format(loc))
-    
-    def valid_move(self, loc: Tuple[int,int], move: Move):
-        potential_move = (loc[0] + move.value[0],loc[1] + move.value[1])
-        return self.valid_loc(potential_move)
     
     def valid_loc(self,loc: Tuple[int,int]):
         if loc[0] < 0 or loc[0] >= self.n:
