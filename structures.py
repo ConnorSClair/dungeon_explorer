@@ -10,10 +10,12 @@ class Move(Enum):
 
 class Dungeon_Master:
     def __init__(self, n: int, m: int):
-        self.dungeon = Dungeon(n,m,0,(0,0),(n-1,m-1))   
+        self.dungeon = Dungeon(n,m,0,(0,0),(n-1,m-1)) 
+        self.move_explorer(Move.RIGHT)
         
     def move_explorer(self,move: Move):
-
+        self.dungeon.move_entity(self.dungeon.explorer_loc,move)
+        print(self.dungeon)
     
 
 
@@ -28,14 +30,23 @@ class Dungeon:
         self.goal_loc = goal_loc
         # adjacency matrix 
         self.build_board(obsticles)
-        self.set_entities((0,0),(n-1,m-1))
+        self.set_entity(start_loc,'o')
+        self.set_entity(goal_loc,'*')
 
     def __repr__(self):
+        result: List[List[str]] = []
+        for i in range(self.n):
+            row = []
+            for j in range(self.m):
+                if self.entities[i][j] == None:
+                    row.append(self.map[i][j])
+                else:
+                    row.append(self.entities[i][j])
+            result.append(row)
         lines = ""
         for i in range(self.n):
-            lines += "".join(self.map[i])
+            lines += "".join(result[i])
             lines += "\n"
-        
         return lines
 
     def build_board(self, obsticles: int):
@@ -45,16 +56,25 @@ class Dungeon:
             logging.info(row)
             self.map.append(row)
         logging.info(self.map)
+        for i in range(self.n):
+            row = [None]*self.m
+            logging.info(row)
+            self.entities.append(row)
+        logging.info(self.entities)
     
-    def set_entities(self, start_loc:Tuple[int,int], goal_loc:Tuple[int,int]): 
-        if self.valid_loc(start_loc):
-            self.map[start_loc[0]][start_loc[1]] = 'o'
+    def move_entity(self, start_loc, move: Move):
+        sym: str = self.get_cell(start_loc,self.entities)
+        self.set_cell(start_loc,None,self.entities)
+        # check if valid
+        end_loc = (start_loc[0]+move[0],start_loc[1]+move[1])
+        self.set_cell(end_loc,sym,self.entities)
+
+    def set_entity(self, loc:Tuple[int,int],sym: str): 
+        if self.valid_loc(loc):
+            self.entities[loc[0]][loc[1]] = sym
+            logging.info(self.entities)
         else:
-            logging.warn("invalid location {}".format(start_loc))
-        if self.valid_loc(goal_loc):
-            self.map[goal_loc[0]][goal_loc[1]] = '*'
-        else:
-            logging.warn("invalid location {}".format(goal_loc))
+            logging.warn("invalid location {}".format(loc))
     
     def valid_move(self, loc: Tuple[int,int], move: Move):
         potential_move = (loc[0] + move[0],loc[1] + move[1])
@@ -67,19 +87,20 @@ class Dungeon:
             return False
         return True
     
-    def get_cell(self,loc: Tuple[int,int]):
+    def get_cell(self,loc: Tuple[int,int], map: List[List[str]]):
         if self.valid_loc(loc):
-            result = self.map[loc[0]][loc[1]]
+            result = map[loc[0]][loc[1]]
             logging.info("got {} with value {}".format(loc,result))
         else:
             logging.warn("invalid location {}".format(loc))
         return result
 
-    def move_cell()
-    
-    def set_cell(self,loc: Tuple[int,int],value: str):
+    def move_cell(self):
+        return False
+
+    def set_cell(self, loc: Tuple[int,int], value: str, map: List[List[str]]):
         if self.valid_loc(loc):
-            self.map[loc[0]][loc[1]] = value
+            map[loc[0]][loc[1]] = value
             logging.info("set {} with value {}".format(loc,value))
         else:
             logging.warn("invalid location {}".format(loc))
