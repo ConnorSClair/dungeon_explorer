@@ -42,7 +42,7 @@ class Dungeon:
         self.explorer_loc = start_loc
         self.goal_loc = goal_loc
 
-        self.map: List[List[str]] = []
+        self.terrain: List[List[str]] = []
         self.entities: List[List[str]] = []
 
         self.build_board(obsticles)
@@ -51,33 +51,44 @@ class Dungeon:
         print(self)
 
     def __repr__(self) -> str:
-        result: List[List[str]] = []
-        for i in range(self.n):
-            row = []
-            for j in range(self.m):
-                if self.entities[i][j] == None:
-                    row.append(self.map[i][j])
-                else:
-                    row.append(self.entities[i][j])
-            result.append(row)
+        result: List[List[str]] = self.get_dungeon_board()
         lines: str= ""
         for i in range(self.n):
             lines += "".join(result[i])
             lines += "\n"
         return lines
 
+    def get_dungeon_board(self) -> List[List[str]]:
+        result: List[List[str]] = []
+        for i in range(self.n):
+            row = []
+            for j in range(self.m):
+                if self.entities[i][j] == None:
+                    row.append(self.terrain[i][j])
+                else:
+                    row.append(self.entities[i][j])
+            result.append(row)
+        return result
+
+    # todo make logic better for below map building 
     def build_board(self, obsticles: int) -> None:
         # initialise with 0s, 1s for obsticles randomly placed 
         for i in range(self.n):
             row = ['.']*self.m
             logging.info(row)
-            self.map.append(row)
-        logging.info(self.map)
+            self.terrain.append(row)
+        logging.info(self.terrain)
         for i in range(self.n):
             row = [None]*self.m
             logging.info(row)
             self.entities.append(row)
         logging.info(self.entities)
+    
+    def add_obstacles(self):
+        return "todo"
+
+    def initialise_map(self):
+        return "todo"
     
     def set_entity(self, loc:Tuple[int,int],sym: str) -> None: 
         if self.valid_loc(loc):
