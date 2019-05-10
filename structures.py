@@ -25,7 +25,7 @@ class Dungeon_Master:
                 if choice == "down":
                     self.move_explorer(Move.DOWN)
         
-    def move_explorer(self,move: Move):
+    def move_explorer(self,move: Move) -> None:
         dungeon = self.dungeon
         sym: str = "o"
         end_loc = (dungeon.explorer_loc[0]+move.value[0],dungeon.explorer_loc[1]+move.value[1])
@@ -37,19 +37,20 @@ class Dungeon_Master:
 
 class Dungeon:
     def __init__(self, n: int, m: int,obsticles: int, start_loc:Tuple[int,int], goal_loc:Tuple[int,int]):
-        self.map: List[List[str]] = []
-        self.entities: List[List[str]] = []
         self.n = n
         self.m = m
         self.explorer_loc = start_loc
         self.goal_loc = goal_loc
-        # adjacency matrix 
+
+        self.map: List[List[str]] = []
+        self.entities: List[List[str]] = []
+
         self.build_board(obsticles)
         self.set_entity(start_loc,'o')
         self.set_entity(goal_loc,'*')
         print(self)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         result: List[List[str]] = []
         for i in range(self.n):
             row = []
@@ -59,13 +60,13 @@ class Dungeon:
                 else:
                     row.append(self.entities[i][j])
             result.append(row)
-        lines = ""
+        lines: str= ""
         for i in range(self.n):
             lines += "".join(result[i])
             lines += "\n"
         return lines
 
-    def build_board(self, obsticles: int):
+    def build_board(self, obsticles: int) -> None:
         # initialise with 0s, 1s for obsticles randomly placed 
         for i in range(self.n):
             row = ['.']*self.m
@@ -78,21 +79,21 @@ class Dungeon:
             self.entities.append(row)
         logging.info(self.entities)
     
-    def set_entity(self, loc:Tuple[int,int],sym: str): 
+    def set_entity(self, loc:Tuple[int,int],sym: str) -> None: 
         if self.valid_loc(loc):
             self.entities[loc[0]][loc[1]] = sym
             logging.info(self.entities)
         else:
             logging.warning("invalid location {}".format(loc))
     
-    def valid_loc(self,loc: Tuple[int,int]):
+    def valid_loc(self,loc: Tuple[int,int]) -> bool:
         if loc[0] < 0 or loc[0] >= self.n:
             return False
         if loc[1] < 0 or loc[1] >= self.m:
             return False
         return True
     
-    def get_cell(self,loc: Tuple[int,int], map: List[List[str]]):
+    def get_cell(self,loc: Tuple[int,int], map: List[List[str]]) -> str:
         if self.valid_loc(loc):
             result = map[loc[0]][loc[1]]
             logging.info("got {} with value {}".format(loc,result))
@@ -102,7 +103,7 @@ class Dungeon:
             return None
         
 
-    def set_cell(self, loc: Tuple[int,int], value: str, map: List[List[str]]):
+    def set_cell(self, loc: Tuple[int,int], value: str, map: List[List[str]]) -> bool:
         if self.valid_loc(loc):
             map[loc[0]][loc[1]] = value
             logging.info("set {} with value {}".format(loc,value))
@@ -122,4 +123,4 @@ if __name__ == "__main__":
     logging.basicConfig(format=format, level=logging.WARNING,
                         datefmt="%H:%M:%S")
     
-    dungeon_master = Dungeon_Master(14,8)
+    dungeon_master = Dungeon_Master(7,8)
