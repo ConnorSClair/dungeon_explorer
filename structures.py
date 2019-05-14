@@ -9,7 +9,8 @@ class Move(Enum):
     DOWN = (1,0)
     RIGHT = (0,1)
     LEFT = (0,-1)
-class Connected_Obj(Enum):
+
+class Connected_Cells(Enum):
     UP = (-1,0)
     DOWN = (1,0)
     RIGHT = (0,1)
@@ -22,6 +23,9 @@ class Connected_Obj(Enum):
 class Dungeon_Master:
     def __init__(self, n: int, m: int):
         self.dungeon = Dungeon(n,m,0,(0,0),(n-1,m-1)) 
+        self.run_game()
+
+    def run_game(self):
         while True:
             choice = input("move - {w,a,s,d} or quit - {q}")
             if choice == "q":
@@ -40,7 +44,8 @@ class Dungeon_Master:
         dungeon = self.dungeon
         sym: str = "o"
         end_loc = (dungeon.explorer_loc[0]+move.value[0],dungeon.explorer_loc[1]+move.value[1])
-        if dungeon.set_cell(end_loc,sym,dungeon.entities):
+        if dungeon.valid_loc(end_loc,dungeon.n,dungeon.m) and dungeon.get_cell(end_loc,dungeon.map) != "/":
+            dungeon.set_cell(end_loc,sym,dungeon.entities)
             dungeon.set_cell(dungeon.explorer_loc,None,dungeon.entities)
             dungeon.explorer_loc = end_loc
         logging.info("{} moved from {} to {}".format(sym,dungeon.explorer_loc,end_loc))
@@ -54,10 +59,14 @@ class Dungeon:
         self.m = m
         self.explorer_loc = start_loc
         self.goal_loc = goal_loc
+
+        self.EXPLORER = "o"
+        self.GOAL = "*"
+
         # adjacency matrix 
         self.build_boards()
-        self.set_entity(start_loc,'o')
-        self.set_entity(goal_loc,'*')
+        self.set_entity(start_loc,self.EXPLORER)
+        self.set_entity(goal_loc,self.GOAL)
         print(self)
 
     def __repr__(self):
@@ -145,10 +154,13 @@ class Dungeon:
             return False
 
 class Traversal:
+    # make traversal methods non static? 
+    # return Traversal object containing paths and perimeter touches 
+
     @staticmethod
     def get_valid_obj_connections(r,c,n,m):
         result = set()
-        for move in Connected_Obj:
+        for move in Connected_Cells:
             end_loc = (r+move.value[0],c+move.value[1])
             if Dungeon.valid_loc(end_loc,n,m):
                 result.add(end_loc)
@@ -188,15 +200,10 @@ class Traversal:
                     if Traversal.is_perimeter_cell(connection[0],connection[1],n,m):
                         perimeter_touches += 1
         return perimeter_touches
-        
-
-        
-
-    
 
 if __name__ == "__main__":
     format = "%(asctime)s: %(message)s"
     logging.basicConfig(format=format, level=logging.INFO,
                         datefmt="%H:%M:%S")
     
-    dungeon_master = Dungeon_Master(5,5)
+    dungeon_master = Dungeon_Master(10,10)
