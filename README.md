@@ -1,7 +1,9 @@
 # Dungeon Explorer
 A terminal console minigame written in python used to practice implementing graph search algorithms.
-## Current features
+![alt text](https://github.com/ConnorSClair/dungeon_explorer/screenshot.PNG "gameplay screenshot")
 
+
+## Current features
 ### MVP
 - [x] Dungeon explorer minigame where user tries to reach the goal in the smallest number of steps. 
 - [x] Random map generation which uses BFS to ensure there is always a path to the goal.
