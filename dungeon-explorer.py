@@ -34,6 +34,8 @@ class Dungeon_Master:
         self.run_game()
 
     def run_game(self):
+        """ Handles user input including player movement and quiting
+        """
         print("\n")
         print("Move the player (o) to the goal (*) in the least number of moves")
         count = 0
@@ -86,9 +88,10 @@ class Dungeon:
         self.explorer_loc = start_loc
         self.goal_loc = goal_loc
 
+        self.FLOOR = "."
         self.EXPLORER = "o"
         self.GOAL = "*"
-        self.obstacle = '/'
+        self.OBSTACLE = '/'
 
         # adjacency matrix 
         self.build_boards()
@@ -119,7 +122,7 @@ class Dungeon:
         return lines
 
     def build_boards(self):
-        self.map = Dungeon.build_board(self.n,self.m,".")
+        self.map = Dungeon.build_board(self.n,self.m,self.FLOOR)
         self.entities = Dungeon.build_board(self.n,self.m,None)
         
     @staticmethod
@@ -141,11 +144,11 @@ class Dungeon:
             if (row,col) == self.explorer_loc \
                 or (row,col) == self.goal_loc:
                 continue
-            self.map[row][col] = "/"
-            perimeter_touches = Traversal.search(row,col,self.n,self.m,self.map,"/")
+            self.map[row][col] = self.OBSTACLE
+            perimeter_touches = Traversal.search(row,col,self.n,self.m,self.map,self.OBSTACLE)
             logging.info(perimeter_touches)
             if perimeter_touches > 1:
-                self.map[row][col] = "."
+                self.map[row][col] = self.FLOOR
             else:
                 obs_remaining -= 1
 
