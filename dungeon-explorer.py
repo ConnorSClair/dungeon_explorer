@@ -28,8 +28,45 @@ class Dungeon_Master:
     """
 
     def __init__(self, n: int, m: int):
-        self.dungeon = Dungeon(n, m, 0, (0, 0), (n-1, m-1))
-        self.run_game()
+        print("Dungeon Explorer")
+        while True:
+            self.dungeon = self.game_options()
+            self.run_game()
+            self.quit_game()
+            
+
+    def quit_game(self):
+        response = input("Play again? {y/n}\n")
+        if response != "y":
+            print("See you next time!")
+            exit(0)
+
+
+    def game_options(self):
+        difficulty = input("How difficult do you want the game to be? {easy, medium, hard}\n")
+        if difficulty == "easy":
+            obstacles = 4
+        elif difficulty == "medium":
+            obstacles = 3
+        elif difficulty == "hard":
+            obstacles = 2
+        else:
+            print("Invalid difficulty")
+            exit(1)
+        
+        cols = int(input("What would you like the width of your dungeon to be? {2-100}\n"))
+        rows = int(input("What would you like the height of your dungeon to be? {2-100}\n"))
+        if cols < 2 or cols > 100 or rows < 2 or rows > 100:
+            print("Invalid map size")
+            exit(2)
+        
+        goal_row = randrange(0,rows)
+        goal_col = randrange(0,cols)
+        start_row = randrange(0,rows)
+        start_col = randrange(0,cols)
+
+        return Dungeon(rows,cols,obstacles,(start_row,start_col),(goal_row,goal_col))
+
 
     def run_game(self):
         """ Handles user input including player movement and quiting
@@ -45,7 +82,7 @@ class Dungeon_Master:
             print(f"Movecount: {count} | Goal: {min_moves} moves")
             choice = input("move - {w,a,s,d} or get help - {help} or quit - {q}")
             if choice == "q":
-                break
+                self.quit_game()
             else:
                 moved = False
                 if choice == "a":
@@ -69,7 +106,7 @@ class Dungeon_Master:
                 print(f"Try again, you took {count} steps but could have made it in {min_moves} steps!")
             else:
                 print(f"Congratulations! You beat my shortest path algorithm. Somehow?!")
-        print("See you next time!")
+        
 
     def run_explorer_shortest_path(self):
         #
@@ -77,13 +114,14 @@ class Dungeon_Master:
 
 
 class Dungeon:
-    def __init__(self, rows: int, cols: int, obsticles: int, start_loc: Tuple[int, int], goal_loc: Tuple[int, int]):
+    def __init__(self, rows: int, cols: int, obstacles: int, start_loc: Tuple[int, int], goal_loc: Tuple[int, int]):
         self.map: List[List[str]] = []
         self.entities: List[List[str]] = []
         self.rows = rows
         self.cols = cols
         self.explorer_loc = start_loc
         self.goal_loc = goal_loc
+        self.obstacles = obstacles
 
         self.FLOOR = "."
         self.EXPLORER = "o"
@@ -92,7 +130,7 @@ class Dungeon:
 
         # adjacency matrix
         self.build_boards()
-        self.add_obstacles(self.rows*self.cols//2)
+        self.add_obstacles(self.rows*self.cols//self.obstacles)
         self.set_entity(self.explorer_loc[0],
                         self.explorer_loc[1], self.EXPLORER)
         self.set_entity(self.goal_loc[0], self.goal_loc[1], self.GOAL)
