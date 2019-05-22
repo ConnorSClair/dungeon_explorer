@@ -1,6 +1,6 @@
 # Dungeon Explorer
 A terminal console minigame written in python used to practice implementing graph search algorithms.
-![alt text](https://github.com/ConnorSClair/dungeon_explorer/screenshot.PNG "gameplay screenshot")
+![gameplay screenshot](https://github.com/ConnorSClair/dungeon_explorer/blob/master/screenshot.png "gameplay screenshot")
 
 
 ## Current features
