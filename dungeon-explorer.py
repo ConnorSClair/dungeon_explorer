@@ -67,6 +67,13 @@ class Dungeon_Master:
 
         return Dungeon(rows,cols,obstacles,(start_row,start_col),(goal_row,goal_col))
 
+    def show_path(self):
+        paths = Traversal.search_goal(self.dungeon.explorer_loc,self.dungeon.map, self.dungeon.FLOOR)
+        path_to_goal = paths[self.dungeon.goal_loc[0]][self.dungeon.goal_loc[1]]
+        for loc in path_to_goal:
+            if loc[0] == self.dungeon.goal_loc[0] and loc[1] == self.dungeon.goal_loc[1]:
+                continue
+            self.dungeon.entities[loc[0]][loc[1]] = "~"
 
     def run_game(self):
         """ Handles user input including player movement and quiting
@@ -97,20 +104,18 @@ class Dungeon_Master:
                     paths = Traversal.search_goal(self.dungeon.explorer_loc,self.dungeon.map, self.dungeon.FLOOR)
                     best_move = paths[self.dungeon.goal_loc[0]][self.dungeon.goal_loc[1]][0]
                     print(f"Best move is to row {best_move[0]} and column {best_move[1]}")
+                if choice == "cheat":
+                    self.show_path()
                 if moved:
                     count += 1
         if self.dungeon.is_game_over():
+            print(self.dungeon)
             if count == min_moves:
                 print(f"Well done, you reached the goal in the smallest number of steps - {count} steps!")
             elif count > min_moves:
                 print(f"Try again, you took {count} steps but could have made it in {min_moves} steps!")
             else:
                 print(f"Congratulations! You beat my shortest path algorithm. Somehow?!")
-        
-
-    def run_explorer_shortest_path(self):
-        #
-        return 0
 
 
 class Dungeon:
