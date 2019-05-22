@@ -7,9 +7,9 @@ A terminal console minigame written in python used to practice implementing grap
 ### MVP
 - [x] Dungeon explorer minigame where user tries to reach the goal in the smallest number of steps. 
 - [x] Random map generation which uses BFS to ensure there is always a path to the goal.
-- [ ] Change map sizes and difficulty of map (more or less obstacles).
+- [x] Change map sizes and difficulty of map (more or less obstacles).
 - [x] Use BFS to find the shortest path to the goal so that the user can know what number of steps they are aiming to reach.
-
+- [x] cheats ;)
 ### Stretch Goals
 - [ ] Allow for multiple goal nodes implement a more difficult mode where the user must find the shortest path to all goal nodes.
 
