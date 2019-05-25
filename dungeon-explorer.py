@@ -22,6 +22,12 @@ class Connected_Cells(Enum):
     UPRIGHT = (-1, 1)
     UPLEFT = (-1, -1)
 
+class Terrain(Enum):
+    OBSTACLE = "\u2580"
+    EXPLORER = "\u265E"
+    FLOOR = "\u00B7"
+    GOAL = "\u265F"
+    PATH = "*"
 
 class Dungeon_Master:
     """ Has instance of dungeon, runs game, takes path from shortest path & send commands to move_explorer,
@@ -43,13 +49,13 @@ class Dungeon_Master:
 
 
     def game_options(self):
-        difficulty = input("How difficult do you want the game to be? {easy, medium, hard}\n")
-        if difficulty == "easy":
-            obstacles = 4
-        elif difficulty == "medium":
+        difficulty = input("How difficult do you want the game to be? {e :easy, m :medium, h :hard}\n")
+        if difficulty == "e":
             obstacles = 3
-        elif difficulty == "hard":
+        elif difficulty == "m":
             obstacles = 2
+        elif difficulty == "h":
+            obstacles = 8/7
         else:
             print("Invalid difficulty")
             exit(1)
@@ -73,13 +79,13 @@ class Dungeon_Master:
         for loc in path_to_goal:
             if loc[0] == self.dungeon.goal_loc[0] and loc[1] == self.dungeon.goal_loc[1]:
                 continue
-            self.dungeon.entities[loc[0]][loc[1]] = "~"
+            self.dungeon.entities[loc[0]][loc[1]] = Terrain.PATH.value
 
     def run_game(self):
         """ Handles user input including player movement and quiting
         """
         print("\n")
-        print("Move the player (o) to the goal (*) in the least number of moves")
+        print(f"Move the explorer {Terrain.EXPLORER.value} to the goal {Terrain.GOAL.value} in the least number of moves")
         count = 0
         paths = Traversal.search_goal(self.dungeon.explorer_loc,self.dungeon.map, self.dungeon.FLOOR)
         path_to_goal = paths[self.dungeon.goal_loc[0]][self.dungeon.goal_loc[1]]
@@ -87,7 +93,7 @@ class Dungeon_Master:
         while not self.dungeon.is_game_over():
             print(self.dungeon)
             print(f"Movecount: {count} | Goal: {min_moves} moves")
-            choice = input("move - {w,a,s,d} or get help - {help} or quit - {q}")
+            choice = input("move - {w,a,s,d},get help - {help}, cheat = {cheat} or quit - {q}")
             if choice == "q":
                 self.quit_game()
             else:
@@ -128,10 +134,10 @@ class Dungeon:
         self.goal_loc = goal_loc
         self.obstacles = obstacles
 
-        self.FLOOR = "."
-        self.EXPLORER = "o"
-        self.GOAL = "*"
-        self.OBSTACLE = '/'
+        self.FLOOR = Terrain.FLOOR.value
+        self.EXPLORER = Terrain.EXPLORER.value
+        self.GOAL = Terrain.GOAL.value
+        self.OBSTACLE = Terrain.OBSTACLE.value
 
         # adjacency matrix
         self.build_boards()
@@ -186,7 +192,7 @@ class Dungeon:
         return result
 
     def add_obstacles(self, obs: int):
-        max_obs = self.rows*self.cols//2
+        max_obs = self.rows*self.cols//8 * 7
         if obs > max_obs:
             obs_remaining = max_obs
         obs_remaining = obs
@@ -214,7 +220,7 @@ class Dungeon:
         return True
 
     def entity_collision(self, row: int, col: int):
-        return self.get_cell(row, col, self.map) == "/"
+        return self.get_cell(row, col, self.map) == Terrain.OBSTACLE.value
 
     def get_cell(self, row: int, col: int, map: List[List[str]]):
         if Dungeon.valid_board_loc(row, col, self.rows, self.cols):
@@ -301,7 +307,7 @@ class Traversal:
             r = to_explore_r.popleft()
             c = to_explore_c.popleft()
             for connection in Traversal.get_valid_obj_connections(r, c, rows, cols, False):
-                if map[connection[0]][connection[1]] == '/' and not visited[connection[0]][connection[1]]:
+                if map[connection[0]][connection[1]] == Terrain.OBSTACLE.value and not visited[connection[0]][connection[1]]:
                     to_explore_r.append(connection[0])
                     to_explore_c.append(connection[1])
                     visited[connection[0]][connection[1]] = True
@@ -335,7 +341,7 @@ class Traversal:
             r = to_explore_r.popleft()
             c = to_explore_c.popleft()
             for connection in Traversal.get_valid_obj_connections(r, c, rows, cols, True):
-                if map[connection[0]][connection[1]] == '.' and not visited[connection[0]][connection[1]]:
+                if map[connection[0]][connection[1]] == Terrain.FLOOR.value and not visited[connection[0]][connection[1]]:
                     to_explore_r.append(connection[0])
                     to_explore_c.append(connection[1])
                     visited[connection[0]][connection[1]] = True
