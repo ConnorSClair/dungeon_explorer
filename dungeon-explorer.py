@@ -23,10 +23,10 @@ class Connected_Cells(Enum):
     UPLEFT = (-1, -1)
 
 class Terrain(Enum):
-    OBSTACLE = "\u2580"
-    EXPLORER = "\u265E"
-    FLOOR = "\u00B7"
-    GOAL = "\u265F"
+    OBSTACLE = "\u2592"#"\u2593"
+    EXPLORER = "\u265D"
+    FLOOR = " "#"\u00B7"
+    GOAL = "\u265C"
     PATH = "*"
 
 class Dungeon_Master:
